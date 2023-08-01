@@ -40,6 +40,12 @@ pub mod v3 {
         #[serde(flatten)]
         pub login_info: LoginInfo,
 
+        /// The fully qualified user ID or just local part of the user ID, to log in.
+        ///
+        /// Deprecated in favour of `login_info`.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub user: Option<String>,
+
         /// ID of the client device
         #[serde(skip_serializing_if = "Option::is_none")]
         pub device_id: Option<OwnedDeviceId>,
@@ -116,6 +122,7 @@ pub mod v3 {
         pub fn new(login_info: LoginInfo) -> Self {
             Self {
                 login_info,
+                user: None,
                 device_id: None,
                 initial_device_display_name: None,
                 refresh_token: false,
@@ -402,6 +409,7 @@ pub mod v3 {
 
             let req: http::Request<Vec<u8>> = Request {
                 login_info: LoginInfo::Token(Token { token: "0xdeadbeef".to_owned() }),
+                user: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
                 refresh_token: false,
@@ -428,6 +436,7 @@ pub mod v3 {
                     identifier: UserIdentifier::Email { address: "hello@example.com".to_owned() },
                     password: "deadbeef".to_owned(),
                 }),
+                user: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
                 refresh_token: false,
