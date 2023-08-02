@@ -37,8 +37,8 @@ pub mod v3 {
     #[request(error = crate::Error)]
     pub struct Request {
         /// The authentication mechanism.
-        #[serde(flatten)]
-        pub login_info: LoginInfo,
+        #[serde(flatten, skip_serializing_if = "Option::is_none")]
+        pub login_info: Option<LoginInfo>,
 
         /// The fully qualified user ID or just local part of the user ID, to log in.
         ///
@@ -119,7 +119,7 @@ pub mod v3 {
     }
     impl Request {
         /// Creates a new `Request` with the given login info.
-        pub fn new(login_info: LoginInfo) -> Self {
+        pub fn new(login_info: Option<LoginInfo>) -> Self {
             Self {
                 login_info,
                 user: None,
@@ -408,7 +408,7 @@ pub mod v3 {
             use crate::uiaa::UserIdentifier;
 
             let req: http::Request<Vec<u8>> = Request {
-                login_info: LoginInfo::Token(Token { token: "0xdeadbeef".to_owned() }),
+                login_info: Option::Some(LoginInfo::Token(Token { token: "0xdeadbeef".to_owned() })),
                 user: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
@@ -432,10 +432,10 @@ pub mod v3 {
             );
 
             let req: http::Request<Vec<u8>> = Request {
-                login_info: LoginInfo::Password(Password {
+                login_info: Option::Some(LoginInfo::Password(Password {
                     identifier: UserIdentifier::Email { address: "hello@example.com".to_owned() },
                     password: "deadbeef".to_owned(),
-                }),
+                })),
                 user: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
