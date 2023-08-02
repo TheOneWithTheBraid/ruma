@@ -46,6 +46,12 @@ pub mod v3 {
         #[serde(skip_serializing_if = "Option::is_none")]
         pub user: Option<String>,
 
+        /// The user’s password.
+        ///
+        /// Required when `login_info` is m.login.password.
+        #[serde(skip_serializing_if = "Option::is_none")]
+        pub password: Option<String>,
+
         /// ID of the client device
         #[serde(skip_serializing_if = "Option::is_none")]
         pub device_id: Option<OwnedDeviceId>,
@@ -123,6 +129,7 @@ pub mod v3 {
             Self {
                 login_info,
                 user: None,
+                password: None,
                 device_id: None,
                 initial_device_display_name: None,
                 refresh_token: false,
@@ -408,8 +415,9 @@ pub mod v3 {
             use crate::uiaa::UserIdentifier;
 
             let req: http::Request<Vec<u8>> = Request {
-                login_info: Option::Some(LoginInfo::Token(Token { token: "0xdeadbeef".to_owned() })),
+                login_info: Some(LoginInfo::Token(Token { token: "0xdeadbeef".to_owned() })),
                 user: None,
+                password: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
                 refresh_token: false,
@@ -432,11 +440,12 @@ pub mod v3 {
             );
 
             let req: http::Request<Vec<u8>> = Request {
-                login_info: Option::Some(LoginInfo::Password(Password {
+                login_info: Some(LoginInfo::Password(Password {
                     identifier: UserIdentifier::Email { address: "hello@example.com".to_owned() },
                     password: "deadbeef".to_owned(),
                 })),
                 user: None,
+                password: None,
                 device_id: None,
                 initial_device_display_name: Some("test".to_owned()),
                 refresh_token: false,
